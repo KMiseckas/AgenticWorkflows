@@ -40,7 +40,7 @@ When evaluating dependencies:
 - Prefer no new dependency when the problem is straightforward and the in-project solution is simple, maintainable, and low-risk
 - Prefer a mature open source library when the problem is genuinely complex and implementing it internally would be error-prone, costly, or hard to maintain
 - Document why a dependency is needed, what problem it solves, and why a simpler in-house approach is not preferred
-- Call out integration constraints, compatibility concerns, and testing impact for any proposed dependency
+- Call out integration constraints, Unity compatibility concerns, and testing impact for any proposed dependency
 - If no dependency is required, say so explicitly
 
 ## Workflow
@@ -72,6 +72,7 @@ The design should optimize for:
 - Reviewability by developers and QA
 - Clear testability expectations
 - Minimal unnecessary dependencies
+- Unity and IL2CPP safety where relevant
 - Implementation precision so task and developer agents can execute with minimal ambiguity
 
 ## Required Document Shape
@@ -212,6 +213,17 @@ Required review-contract items:
 - Blocking conditions for final approval
 
 If a requirement is intentionally deferred, mark it explicitly so `taskReviewer` can treat it as tracked scope rather than a hidden gap.
+
+## Unity and Library Constraints
+
+When relevant to the task, align the design with project constraints such as:
+
+- Minimal stable public API
+- Clear lifecycle boundaries
+- Core versus Unity-layer separation
+- IL2CPP and AOT safety
+- Avoiding reflection-heavy or allocation-heavy runtime approaches
+- Keeping core logic testable outside Unity
 
 ## Output Format
 

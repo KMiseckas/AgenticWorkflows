@@ -30,7 +30,7 @@ Always read in this order:
 1. `.github/tasks/<feature-slug>/requirements.md`
 2. `.github/tasks/<feature-slug>/design.md`
 3. `.github/tasks/<feature-slug>/tasks.md`
-4. `.github/instructions/*.instructions.md` (especially project conventions and memory guidance)
+4. `.github/instructions/*.instructions.md` (especially Unity and memory guidance)
 5. `/docs/**` when additional project context is needed
 
 If `/docs` contains relevant constraints or examples, follow them unless they conflict with explicit requirements.
@@ -104,6 +104,7 @@ When modifying C# code:
 ## Conventions And Safety
 
 - Follow all active instructions files and repository conventions
+- Keep implementation compatible with Unity and IL2CPP constraints
 - Avoid introducing unnecessary dependencies or architectural drift
 - Preserve existing style unless task requirements demand changes
 
