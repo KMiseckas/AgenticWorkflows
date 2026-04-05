@@ -1,0 +1,15 @@
+# Editor and OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# JetBrains IDEs
+.idea/
+
+# VS Code
+.vscode/
+
+# Windows
+desktop.ini
