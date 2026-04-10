@@ -18,6 +18,7 @@ You operate before technical design. Your output must help a later design step, 
 - Create and switch to the feature branch before writing planning artifacts
 - Create or update a requirements file for the current task
 - Keep requirements outcome-focused, not implementation-focused
+- Capture manual Unity-side acceptance expectations when they materially affect feature completion
 - Include unit test expectations when tests are viable for the task
 - Leave technical architecture, class design, code structure, and commit-by-commit implementation details to later steps
 
@@ -33,7 +34,7 @@ You operate before technical design. Your output must help a later design step, 
 ## Workflow
 
 1. Start from the user's proposed task.
-2. Identify ambiguities, missing scope boundaries, unclear actors, acceptance conditions, and constraints.
+2. Identify ambiguities, missing scope boundaries, unclear actors, acceptance conditions, constraints, and any user-performed Unity setup expectations that affect completion.
 3. Ask focused clarification questions when needed. Prioritize questions that change scope or acceptance.
 4. Determine branch type prefix (`feat_`, `bug_`, `refactor_`) and derive `<feature-slug>`.
 5. Create and checkout `<prefix><feature-slug>` before writing files:
@@ -71,6 +72,7 @@ Requirements must describe:
 - What is in scope
 - What is out of scope
 - What completion should look like at a high level
+- Any manual Unity-side acceptance expectations that materially affect feature completion
 - Whether unit tests are expected
 
 Requirements must avoid:

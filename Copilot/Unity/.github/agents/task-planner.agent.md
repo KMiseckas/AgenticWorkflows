@@ -1,5 +1,5 @@
 ---
-description: "Use when converting requirements.md and design.md into an ordered tasks.md with branch naming, commit-ready task slices, [Code]/[Unity] execution blocks, validation gates, and full coverage checks before implementation."
+description: "Use when converting requirements.md and design.md into an ordered tasks.md with branch naming, commit-ready task slices, [Code]/[Unity] execution blocks, validation gates, and full coverage checks before implementation. The [Unity] phase produces manual setup guidance, not scene mutations."
 name: "Task Planner"
 tools: [read, edit, search, todo]
 model: ["Claude Sonnet 4.6 (copilot)", "GPT-5 (copilot)"]
@@ -38,8 +38,9 @@ You operate after requirements and design, and before implementation.
 - Do NOT assume a branch name style outside the required prefixes
 - Do NOT finalize tasks if documentation updates are missing where relevant
 - Do NOT finalize tasks if `.github/instructions/projectOverview.instructions.md` sync is needed but not planned
-- Do NOT leave a `[Unity]` block empty without explicitly writing `N/A — no Unity Editor changes for this task`
+- Do NOT leave a `[Unity]` block empty without explicitly writing `N/A — no Unity-side setup for this task`
 - Do NOT allow a task's `[Unity]` block to reference scene or prefab changes that are not defined in `design.md` `## Unity Spec`
+- Do NOT structure `[Unity]` blocks around automated editor mutation; they must describe the manual setup guidance to be produced
 
 ## Branch Naming Rules
 
@@ -90,9 +91,9 @@ Each task should target one commit after it passes completion gates.
 Within every task, enforce this order:
 
 1. **[Code]** — implement all C# changes (Core + Unity-layer scripts), run tests
-2. **[Unity]** — invoke `Unity Integrator` to apply scene/prefab changes via MCP tools, update `UnityState.md`
+2. **[Unity]** — invoke `Unity Integration Instructor` to create or update `unity_instructions.md` and any optional helper editor scripts
 
-`Unity Integrator` must not be invoked until the `[Code]` block of the same task passes.
+`Unity Integration Instructor` must not be invoked until the `[Code]` block of the same task passes.
 
 ## Standard Per-Task Flow
 
@@ -118,10 +119,11 @@ For documentation-impacting tasks, include:
 
 ### [Unity] Block Contents
 
-- Design ref: which `## Unity Spec` entries are being applied
-- MCP tool actions expected (e.g., create GameObject, attach script, set component values)
-- Validation: confirm `UnityState.md` snapshot matches `## Unity Spec` after `Unity Integrator` runs
-- If no Unity Editor changes: `N/A — no Unity Editor changes for this task`
+- Design ref: which `## Unity Spec` entries the task affects
+- Manual setup outcome: what the user must do in Unity after the code lands
+- `unity_instructions.md` update expectation for this task
+- Optional helper editor scripts when justified, including intended menu path under `Tools/<feature-slug>/...`
+- If no Unity-side setup is needed: `N/A — no Unity-side setup for this task`
 
 ### Validation Expectations
 
@@ -129,8 +131,8 @@ Validation should include, when applicable:
 
 - Targeted unit tests for the `[Code]` increment
 - Relevant existing test suite or subset run
-- `Unity Integrator` run confirming scene/prefab matches `## Unity Spec`
-- `UnityState.md` diff confirming expected changes
+- `unity_instructions.md` update confirming the user-facing setup steps were documented
+- Optional helper editor scripts compile with the rest of the codebase and are documented
 - Quick QA review pass using `taskReviewer` agent when available
 - Review and resolve comments/check comments before completion
 
@@ -142,9 +144,9 @@ Every task must include a short review request that gives `taskReviewer` enough 
 
 Required fields in each task:
 
-- Review scope: what changed in this task (code and/or Unity)
-- Primary checks: key behaviors, Unity Spec alignment, and risks to verify
-- Required evidence: which tests or checks must be shown; whether `UnityState.md` snapshot is expected
+- Review scope: what changed in this task (code and/or Unity guidance)
+- Primary checks: key behaviors, Unity Spec alignment, and whether the manual Unity instructions are actionable
+- Required evidence: which tests or checks must be shown; whether `unity_instructions.md` updates or helper scripts are expected
 - Blocking conditions: what should force `BLOCKED`
 
 The expected `taskReviewer` output for each task is:
@@ -160,7 +162,7 @@ The expected `taskReviewer` output for each task is:
 A task is only complete when:
 
 - `[Code]` implementation steps are finished and tests pass where viable
-- `[Unity]` steps are finished (or explicitly N/A): `Unity Integrator` has run and `UnityState.md` is updated
+- `[Unity]` steps are finished (or explicitly N/A): `Unity Integration Instructor` has run and `unity_instructions.md` is updated
 - Validation checks pass
 - Quick QA review pass is successful (or explicitly deferred with reason)
 - Outstanding comments/check comments are resolved or tracked
@@ -196,7 +198,7 @@ Use this structure:
 - Work is implemented in order, task by task.
 - Each completed task should result in one commit.
 - Keep commits scoped to the task objective.
-- Within each task: [Code] runs first, [Unity] runs second. Do not invoke Unity Integrator until [Code] passes.
+- Within each task: [Code] runs first, [Unity] runs second. Do not invoke Unity Integration Instructor until [Code] passes.
 - Include doc updates in `docs/` whenever behavior, API, usage, or architecture changes.
 - Keep `.github/instructions/projectOverview.instructions.md` aligned with project-level changes.
 - A task checkbox may be set to complete only after all items under its `Completion Gate` are checked.
@@ -236,19 +238,23 @@ Unit Tests:
 
 Design ref: `## Unity Spec > <Scene/Prefab name>`
 
-MCP Actions:
+Instruction updates:
 
 1. ...
 
-Post-run check: `UnityState.md` updated and matches `## Unity Spec > <Scene/Prefab name>`
+Optional helper editor scripts:
 
-_Or:_ `N/A — no Unity Editor changes for this task`
+- `Assets/Editor/...` exposed as `Tools/<feature-slug>/...`, or `None`
+
+Post-run check: `.github/tasks/<feature-slug>/unity_instructions.md` updated for this task and consistent with `## Unity Spec > <Scene/Prefab name>`
+
+_Or:_ `N/A — no Unity-side setup for this task`
 
 #### Validation
 
 - Unit tests: ...
-- Unity Integrator run: ...
-- UnityState.md snapshot diff: ...
+- Unity Integration Instructor update: ...
+- `unity_instructions.md` review: ...
 - QA quick pass (`taskReviewer`): ...
 - taskReviewer review request:
   - Review scope: ...
@@ -268,8 +274,9 @@ _Or:_ `N/A — no Unity Editor changes for this task`
 
 - [ ] [Code] implementation done
 - [ ] [Code] unit tests passed or exception documented
-- [ ] [Unity] Unity Integrator run complete (or N/A)
-- [ ] [Unity] UnityState.md updated and matches Unity Spec (or N/A)
+- [ ] [Unity] Unity Integration Instructor run complete (or N/A)
+- [ ] [Unity] `unity_instructions.md` updated and matches Unity Spec intent (or N/A)
+- [ ] [Unity] Helper editor scripts added and documented, or N/A
 - [ ] Validation passed
 - [ ] QA quick pass done or exception documented
 - [ ] taskReviewer output captured and any notes tracked
@@ -296,6 +303,7 @@ _Or:_ `N/A — no Unity Editor changes for this task`
   - [ ] Key design components are mapped to tasks
   - [ ] Critical design constraints are represented in validation gates
   - [ ] Every Unity Spec entry (scene/prefab) is covered by at least one task's [Unity] block
+  - [ ] Every Unity-affecting task plans a `unity_instructions.md` update or explicitly marks Unity work N/A
 - Gaps or follow-ups:
   - ...
 ```
@@ -308,6 +316,7 @@ Before finalizing `tasks.md`:
 - Confirm no missing scope from requirements or design
 - Confirm no major task exists without a source requirement/design anchor
 - Confirm every `## Unity Spec` entry in `design.md` is referenced in at least one task's `[Unity]` block
+- Confirm every Unity-affecting task includes a `unity_instructions.md` update expectation
 - Confirm documentation updates are planned for every requirement/design element that changes behavior, API, or usage
 - Confirm `.github/instructions/projectOverview.instructions.md` updates are planned when project-level facts are impacted
 - Confirm `tasks.md` branch section matches the `requirements.md` branch section exactly
@@ -332,5 +341,5 @@ When complete, provide:
 1. The path to the created or updated `tasks.md`
 2. The selected branch name and rationale
 3. A short summary of task structure, `[Code]`/`[Unity]` block breakdown, validation gates, and `taskReviewer` handoff blocks
-4. Confirmation that every `## Unity Spec` entry is covered by a task
+4. Confirmation that every `## Unity Spec` entry is covered by a task and that Unity-affecting tasks update `unity_instructions.md`
 5. Any assumptions or unresolved high-impact questions

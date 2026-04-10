@@ -1,5 +1,5 @@
 ---
-description: "Shared rules for custom planning/development/review agents to reduce duplication and keep behavior consistent."
+description: "Shared rules for custom planning, development, and review agents so the workflow stays aligned and evidence-based."
 applyTo: ".github/agents/*.agent.md"
 ---
 
@@ -17,6 +17,7 @@ applyTo: ".github/agents/*.agent.md"
 - A task is complete only when implementation, validation, and review-gate evidence are present.
 - If evidence is missing or contradictory, report `BLOCKED` (or equivalent blocked state) instead of assuming completion.
 - If test execution is not possible, document why and require the best available alternative evidence.
+- For Unity-related work, distinguish between `instructions prepared` and `manual editor work executed`. Do not collapse those states into one claim.
 
 ## Output Discipline
 
@@ -24,10 +25,14 @@ applyTo: ".github/agents/*.agent.md"
 - Separate confirmed facts, assumptions, and open questions.
 - Prefer minimal, scoped changes over broad rewrites.
 
-## Unity Hard Gates
+## Unity Workflow Rules
 
-- Do NOT infer scene or prefab structure. If `## Unity Spec` is absent or incomplete in `design.md`, stop and report `BLOCKED`.
-- Do NOT read, write, or edit `.unity` or `.prefab` files directly. Use MCP Unity tools or generated editor scripts only.
-- `UnityState.md` is read-only for all agents except `Unity Integrator`. No agent may write to it except `Unity Integrator`.
-- Design is the source of truth. The Unity scene is a derived artifact of Design — not the reverse.
-- If a manual editor change is discovered that conflicts with Design, update Design first, then re-run `Unity Integrator`.
+- Do NOT use editor automation or live scene inspection as part of this workflow.
+- Do NOT read, write, or edit `.unity` or `.prefab` files directly.
+- Do NOT infer live scene or prefab structure from repository files, screenshots, or stale notes.
+- If `## Unity Spec` is absent or incomplete in `design.md` for Unity-affecting work, stop and report `BLOCKED`.
+- Treat `design.md` `## Unity Spec` as the source of truth for required Unity-side setup.
+- Treat `.github/tasks/<feature-slug>/unity_instructions.md` as the user-facing execution guide derived from design and task scope.
+- The workflow's Unity deliverable is accurate guidance, not editor mutation. Agents may prepare instructions and optional helper scripts, but must not claim the Unity editor work was executed unless the user explicitly confirms it.
+- Optional Unity editor scripts are allowed only when they reduce repetitive or error-prone setup. They must be documented in `unity_instructions.md`, exposed under `Tools/<feature-slug>/...`, and described with a manual alternative when feasible.
+- If a manual editor change conflicts with design or task artifacts, update design and the affected planning/instruction documents first. Do not treat the manual scene state as the source of truth.

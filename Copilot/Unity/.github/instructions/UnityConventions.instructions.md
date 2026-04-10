@@ -1,5 +1,5 @@
 ---
-description: "Unity-specific coding conventions, MonoBehaviour rules, MCP tool policy, and core vs Unity-layer separation guidelines."
+description: "Unity-specific coding conventions, MonoBehaviour rules, editor-script guidance, and core vs Unity-layer separation guidelines."
 applyTo: "**/*.cs"
 ---
 
@@ -57,15 +57,24 @@ applyTo: "**/*.cs"
 
 ## Scene and Prefab Policy
 
-- Do NOT hand-edit `.unity` or `.prefab` YAML files — use MCP Unity tools or generated editor scripts
-- Do NOT reconstruct scene structure by reading raw Unity YAML in agents
-- Unity scene state is derived from `design.md` (`## Unity Spec`) — not the other way around
-- If a manual editor change conflicts with Design, update Design first, then re-run `Unity Integrator`
+- Do NOT hand-edit `.unity` or `.prefab` YAML files
+- Do NOT reconstruct scene or prefab structure by reading raw Unity YAML in agents
+- Describe required Unity setup in `design.md` (`## Unity Spec`) and user-facing execution steps in `.github/tasks/<feature-slug>/unity_instructions.md`
+- Treat user-performed editor setup as external to the agent workflow unless the user explicitly reports the result
+- If a manual editor change conflicts with design or `unity_instructions.md`, update the design and instructions first
+
+## Editor Script Policy
+
+- Unity editor scripts are optional helpers, not the primary source of truth
+- Use editor scripts only when they reduce repetitive or error-prone setup work
+- Place editor scripts under an `Editor` folder and expose entry points under `Tools/<feature-slug>/...`
+- Keep editor scripts idempotent where practical so users can re-run them safely
+- Document what each editor script changes and the manual alternative in `unity_instructions.md`
 
 ## Documentation
 
 - XML doc comments required for all public types, methods, properties, and events
-- Keep XML docs concise — describe *what* and *why*, not *how*
+- Keep XML docs concise — describe _what_ and _why_, not _how_
 - Use `<summary>`, `<param>`, `<returns>`, and `<exception>` tags where applicable
 - Internal and private members do not require XML docs unless the logic is non-obvious
 
